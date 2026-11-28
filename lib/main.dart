@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'core/theme.dart';
 import 'screens/home_screen.dart';
 import 'services/document_store.dart';
+import 'services/ad_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DocumentStore.instance.init();
+  await AdService.instance.initialize();
   runApp(const PaperScanApp());
 }
 

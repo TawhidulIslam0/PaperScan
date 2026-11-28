@@ -1,162 +1,51 @@
 import 'package:flutter/material.dart';
-
 import 'premium_screen.dart';
+import 'pdf_tools_workbench.dart';
+import '../models/document_item.dart';
 
 class ToolsScreen extends StatelessWidget {
   final VoidCallback onScan;
   final VoidCallback onImport;
-
-  const ToolsScreen({
-    super.key,
-    required this.onScan,
-    required this.onImport,
-  });
+  final ValueChanged<DocumentItem>? onDocumentCreated;
+  const ToolsScreen({super.key, required this.onScan, required this.onImport, this.onDocumentCreated});
 
   @override
   Widget build(BuildContext context) {
     final tools = [
-      (
-        'Merge PDFs',
-        Icons.merge_type,
-        'Combine multiple PDFs into one file',
-      ),
-      (
-        'Split PDF',
-        Icons.call_split,
-        'Save selected pages separately',
-      ),
-      (
-        'Compress',
-        Icons.compress,
-        'Reduce PDF file size',
-      ),
-      (
-        'Convert to Word',
-        Icons.description_outlined,
-        'Convert PDF text to editable DOCX',
-      ),
-      (
-        'OCR text',
-        Icons.text_snippet_outlined,
-        'Recognize text from scanned pages',
-      ),
-      (
-        'Sign & annotate',
-        Icons.draw_outlined,
-        'Sign, mark up and highlight PDFs',
-      ),
-      (
-        'Protect PDF',
-        Icons.lock_outline,
-        'Add password protection',
-      ),
-      (
-        'Extract pages',
-        Icons.content_cut,
-        'Export selected pages',
-      ),
+      ('Merge PDFs', Icons.merge_type, 'Combine multiple PDF files'),
+      ('Split & extract pages', Icons.call_split, 'Save page ranges as separate PDFs'),
+      ('Optimize PDF', Icons.compress, 'Rewrite PDF structure for optimization'),
+      ('PDF to Word', Icons.description_outlined, 'Export selectable text to DOCX'),
+      ('OCR text', Icons.text_snippet_outlined, 'Recognize text from photos'),
+      ('Text, signature & watermark', Icons.draw_outlined, 'Add text or typed signature overlays'),
+      ('Password tools', Icons.lock_outline, 'Encrypt or unlock with a password'),
+      ('Rotate pages', Icons.rotate_90_degrees_ccw, 'Rotate all pages'),
     ];
-
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 30),
       children: [
-        // Screen heading
-        Text(
-          'PDF tools',
-          style: Theme.of(context)
-              .textTheme
-              .headlineMedium
-              ?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-
+        Text('PDF tools', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 6),
-
-        const Text(
-          'Your scanner is free and unlimited. Pro tools unlock advanced document workflows.',
-        ),
-
+        const Text('Free unlimited scanning. Advanced processing tools are available in the workbench.'),
         const SizedBox(height: 16),
-
-        // Scan document
-        Card(
-          child: ListTile(
-            leading: const Icon(
-              Icons.camera_alt,
-              color: Color(0xFF3868F5),
-            ),
-            title: const Text('Scan a document'),
-            subtitle: const Text('Create a multi-page PDF'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: onScan,
-          ),
-        ),
-
-        // Import PDF
-        Card(
-          child: ListTile(
-            leading: const Icon(
-              Icons.file_open,
-              color: Color(0xFF3868F5),
-            ),
-            title: const Text('Import PDF'),
-            subtitle: const Text(
-              'Bring an existing PDF into your library',
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: onImport,
-          ),
-        ),
-
+        Card(child: ListTile(leading: const Icon(Icons.camera_alt, color: Color(0xFF3868F5)), title: const Text('Scan a document'), subtitle: const Text('Create a multi-page PDF'), trailing: const Icon(Icons.chevron_right), onTap: onScan)),
+        Card(child: ListTile(leading: const Icon(Icons.file_open, color: Color(0xFF3868F5)), title: const Text('Import PDF'), subtitle: const Text('Add an existing PDF to your library'), trailing: const Icon(Icons.chevron_right), onTap: onImport)),
         const SizedBox(height: 8),
-
-        // Premium tools
-        ...tools.map(
-          (t) => Card(
-            child: ListTile(
-              leading: Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF3868F5)
-                      .withValues(alpha: .1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  t.$2,
-                  color: const Color(0xFF3868F5),
-                ),
-              ),
-
-              title: Text(t.$1),
-
-              subtitle: Text(t.$3),
-
-              trailing: const Icon(
-                Icons.lock_outline,
-                size: 18,
-              ),
-
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const PremiumScreen(),
-                  ),
-                );
-              },
-            ),
+        Card(
+          child: ListTile(
+            leading: Container(width: 44, height: 44, decoration: BoxDecoration(color: const Color(0xFF3868F5).withValues(alpha: .12), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.build_circle_outlined, color: Color(0xFF3868F5))),
+            title: const Text('Open PDF Workbench', style: TextStyle(fontWeight: FontWeight.w600)),
+            subtitle: const Text('Launch the implemented PDF processing tools'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PdfToolsWorkbench(onDocumentCreated: onDocumentCreated ?? (_) {}))),
           ),
         ),
-
+        const SizedBox(height: 8),
+        ...tools.map((t) => Card(child: ListTile(leading: Icon(t.$2, color: const Color(0xFF3868F5)), title: Text(t.$1), subtitle: Text(t.$3), trailing: const Icon(Icons.chevron_right), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PdfToolsWorkbench(onDocumentCreated: onDocumentCreated ?? (_) {})))))),
+        const SizedBox(height: 16),
+        Card(child: ListTile(leading: const Icon(Icons.workspace_premium_outlined), title: const Text('PaperScan Pro'), subtitle: const Text('Subscription and lifetime plans'), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PremiumScreen())))),
         const SizedBox(height: 12),
-
-        // Information
-        Text(
-          'Advanced tools are shown as planned premium features. They are not enabled until their processing implementation is added.',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
+        const Text('Some conversion workflows preserve extracted text rather than reconstructing the original document layout. OCR is currently image/photo based. Compression may not shrink every file.', style: TextStyle(fontSize: 12)),
       ],
     );
   }
